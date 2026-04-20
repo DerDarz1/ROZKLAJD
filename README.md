@@ -1,33 +1,48 @@
-# ROZKLAD
+# Rozkład Jazdy 🚌
 
-Prosta aplikacja PWA z rozkładem jazdy, przygotowana tak, żeby działała lokalnie i po wrzuceniu na GitHub Pages.
+Rozkład busów na trasie **Ruda – Kielce** (KOWMAR zwykły, KOWMAR szybki, MAJCHRAK).  
+Działa jako **PWA** — można zainstalować na telefonie jak aplikację.
 
-## Co już ma
+🌐 **Strona:** `https://TWOJA-NAZWA.github.io/NAZWA-REPO/rozklad.html`
 
-- instalowalną apkę PWA
-- tryb jasny i ciemny
-- animowane przejście autobusu między zakładkami
-- licznik najbliższego kursu
-- osobne odliczanie dla kierunków
-- widok `Tylko dziś` albo `Wszystkie warianty`
-- linkowanie do konkretnej zakładki przez hash, np. `#kowmar`
+## Funkcje
 
-## Jak wrzucić na GitHub
+- Dwa kafelki live: **do Kielc** i **z Kielc** z odliczaniem co sekundę
+- Fallback na **jutro** gdy dziś nie ma już kursów
+- Przełącznik dnia: Pon–Pt / Sobota
+- Przełącznik przewoźnika i kierunku z animacją busa 🚌
+- Tryb ciemny / jasny
+- Działa **offline** (service worker)
+- Instalowalna jako apka (PWA)
 
-1. Utwórz repozytorium na GitHubie.
-2. Wrzuć do niego zawartość tego folderu.
-3. W ustawieniach repozytorium wejdź w `Pages`.
-4. Ustaw publikację z gałęzi `main` albo `master`, z katalogu `/root`.
-5. Po chwili aplikacja będzie dostępna pod adresem GitHub Pages.
+## Struktura plików
 
-## Ważne pliki
+```
+├── index.html       ← przekierowanie do rozklad.html
+├── rozklad.html     ← główna aplikacja
+├── manifest.json    ← konfiguracja PWA
+├── sw.js            ← service worker (offline)
+├── icon-192.svg     ← ikona apki 192×192
+├── icon-512.svg     ← ikona apki 512×512
+└── .github/
+    └── workflows/
+        └── deploy.yml  ← auto-deploy na GitHub Pages
+```
 
-- `index.html` - wejście pod GitHub Pages
-- `rozklad.html` - główna aplikacja
-- `manifest.json` - konfiguracja PWA
-- `sw.js` - service worker do cache i pracy offline
+## Wrzucenie na GitHub
+
+```bash
+git init
+git add .
+git commit -m "init: rozkład jazdy PWA"
+git branch -M main
+git remote add origin https://github.com/TWOJA-NAZWA/NAZWA-REPO.git
+git push -u origin main
+```
+
+Potem: **Settings → Pages → Source: GitHub Actions** — gotowe.
 
 ## Instalacja jako apka
 
-- Android / Chrome: otwórz stronę i wybierz `Dodaj do ekranu głównego`
-- iPhone / Safari: użyj `Udostępnij` -> `Do ekranu początkowego`
+- **Android / Chrome:** otwórz stronę → menu → *Dodaj do ekranu głównego*
+- **iPhone / Safari:** *Udostępnij* → *Do ekranu początkowego*
