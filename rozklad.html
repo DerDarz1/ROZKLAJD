@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ROZKLAD</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ROZKLAD">
+<meta name="mobile-web-app-capable" content="yes">
+
+<style>
+:root {
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.96);
+  --surface-soft: rgba(255, 255, 255, 0.58);
+  --border: rgba(148, 163, 184, 0.24);
+  --text: #10233f;
+  --muted: #5f7188;
+  --pill: #e2e8f0;
+  --pill-text: #0f172a;
+  --primary-a: #0f766e;
+  --primary-b: #0ea5e9;
+  --accent-a: #f97316;
+  --accent-b: #ef4444;
+  --ok: #16a34a;
+  --shadow: 0 22px 60px rgba(15, 23, 42, 0.12);
+  --glow: 0 18px 38px rgba(14, 165, 233, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Trebuchet MS", "Aptos", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.24), transparent 34%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.18), transparent 28%),
+    linear-gradient(160deg, #ecfeff 0%, #f8fafc 44%, #eff6ff 100%);
+  transition: background 0.35s ease, color 0.35s ease;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  filter: blur(44px);
+  opacity: 0.24;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::before {
+  top: -120px;
+  right: -70px;
+  background: rgba(14, 165, 233, 0.36);
+}
+
+body::after {
+  bottom: -140px;
+  left: -100px;
+  background: rgba(249, 115, 22, 0.24);
+}
+
+.dark {
+  --surface: rgba(8, 17, 31, 0.82);
+  --surface-strong: rgba(15, 28, 47, 0.96);
+  --surface-soft: rgba(15, 28, 47, 0.7);
+  --border: rgba(148, 163, 184, 0.16);
+  --text: #eef6ff;
+  --muted: #aab8cb;
+  --pill: rgba(30, 41, 59, 0.92);
+  --pill-text: #e2e8f0;
+  --shadow: 0 24px 64px rgba(2, 6, 23, 0.34);
+  --glow: 0 18px 42px rgba(14, 165, 233, 0.22);
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.12), transparent 28%),
+    linear-gradient(160deg, #040814 0%, #08111f 42%, #0f1b2f 100%);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 22px 18px 34px;
+}
+
+.glass {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 22px;
+  border-radius: 28px;
+  margin-bottom: 16px;
+}
+
+.brand {
+  min-width: 0;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.12);
+  color: var(--primary-a);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live-pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 8px rgba(22, 163, 74, 0.14);
+}
+
+h1 {
+  margin: 14px 0 6px;
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  line-height: 1;
+  letter-spacing: 0.12em;
+}
+
+.status-line {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.theme-toggle,
+.ghost-button {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-weight: 800;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.theme-toggle {
+  color: white;
+  background: linear-gradient(135deg, var(--primary-a), var(--primary-b));
+  box-shadow: var(--glow);
+}
+
+.ghost-button {
+  color: var(--text);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+}
+
+.theme-toggle:hover,
+.ghost-button:hover,
+.action-tile:hover,
+.tab:hover,
+.dock-tab:hover,
+.clear-search:hover {
+  transform: translateY(-2px);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.8fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.hero-main,
+.action-tile,
+.search-wrap,
+.card,
+.badge,
+.tabs,
+.mobile-dock {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+}
+
+.hero-main {
+  padding: 24px;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-main::after {
+  content: "";
+  position: absolute;
+  inset: auto -40px -70px auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.18), transparent 68%);
+  pointer-events: none;
+}
+
+.hero-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-time {
+  display: block;
+  margin: 0;
+  font-size: clamp(3rem, 8vw, 4.8rem);
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+}
+
+.hero-route {
+  margin: 14px 0 0;
+  font-size: 1.08rem;
+  line-height: 1.4;
+  max-width: 32rem;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.hero-chip {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
+.hero-side {
+  display: grid;
+  gap: 14px;
+}
+
+.action-tile {
+  text-align: left;
+  padding: 20px;
+  border-radius: 24px;
+  color: inherit;
+}
+
+.action-tile small {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.action-tile strong {
+  display: block;
+  font-size: 1.08rem;
+}
+
+.action-tile span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.search-wrap {
+  padding: 16px;
+  border-radius: 24px;
+  margin-bottom: 16px;
+}
+
+.search-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-strong);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
+  border-color: rgba(14, 165, 233, 0.44);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+.clear-search {
+  padding: 0 18px;
+  border-radius: 18px;
+  color: var(--text);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  font-weight: 800;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border-radius: 22px;
+  margin-bottom: 16px;
+}
+
+.tab,
+.dock-tab {
+  padding: 14px 16px;
+  border-radius: 18px;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  background: var(--surface-strong);
+  border: 1px solid transparent;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tab.active,
+.dock-tab.active {
+  color: white;
+  background: linear-gradient(135deg, var(--primary-a), var(--primary-b));
+  box-shadow: var(--glow);
+}
+
+#info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.badge {
+  padding: 18px;
+  border-radius: 24px;
+}
+
+.badge small {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.badge strong {
+  display: block;
+  font-size: 1.16rem;
+  line-height: 1.28;
+}
+
+.badge span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.93rem;
+}
+
+.badge.accent {
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.16), rgba(14, 165, 233, 0.18)),
+    var(--surface);
+}
+
+.badge.warm {
+  background:
+    linear-gradient(135deg, rgba(249, 115, 22, 0.16), rgba(239, 68, 68, 0.14)),
+    var(--surface);
+}
+
+.badge.muted {
+  background:
+    linear-gradient(135deg, rgba(100, 116, 139, 0.1), rgba(15, 23, 42, 0.04)),
+    var(--surface);
+}
+
+.card {
+  padding: 20px;
+  border-radius: 26px;
+  margin-bottom: 14px;
+  animation: fadeInUp 0.32s ease;
+}
+
+.card.inactive {
+  opacity: 0.72;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.route {
+  margin: 0;
+  font-size: 1.22rem;
+}
+
+.route-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.tag {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--pill);
+  color: var(--pill-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tag.active-day {
+  color: white;
+  background: linear-gradient(135deg, var(--primary-a), var(--primary-b));
+}
+
+.tag.next {
+  color: white;
+  background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+}
+
+.times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.time {
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--pill);
+  color: var(--pill-text);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.time.highlight {
+  color: white;
+  background: linear-gradient(135deg, var(--primary-a), var(--primary-b));
+  box-shadow: var(--glow);
+  animation: pulse 1.3s infinite;
+}
+
+.empty-state,
+.empty {
+  padding: 20px;
+  border-radius: 20px;
+  color: var(--muted);
+  text-align: center;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.bus {
+  position: fixed;
+  right: 24px;
+  bottom: 20px;
+  font-size: 42px;
+  opacity: 0.14;
+  transform: rotate(-4deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bus.animate {
+  animation: drive 0.85s linear;
+}
+
+.tab-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tab-transition.active {
+  opacity: 1;
+}
+
+.tab-transition::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent 48%),
+    linear-gradient(135deg, rgba(15, 118, 110, 0.3), rgba(14, 165, 233, 0.26), rgba(249, 115, 22, 0.28));
+}
+
+.tab-transition::after {
+  content: "";
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  top: 50%;
+  height: min(24vh, 180px);
+  border-top: 3px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.32)),
+    repeating-linear-gradient(90deg, transparent 0 8%, rgba(255, 255, 255, 0.7) 8% 12%, transparent 12% 20%);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.25);
+  transform: translateY(-50%) scaleX(0.15);
+  transform-origin: center;
+  opacity: 0;
+}
+
+.transition-bus {
+  position: absolute;
+  left: -260px;
+  top: 50%;
+  font-size: clamp(6rem, 16vw, 11rem);
+  line-height: 1;
+  transform: translateY(-56%);
+  filter: drop-shadow(0 14px 26px rgba(15, 23, 42, 0.32));
+  opacity: 0;
+}
+
+.transition-label {
+  position: absolute;
+  right: clamp(18px, 5vw, 54px);
+  bottom: clamp(24px, 12vh, 100px);
+  padding: 12px 18px;
+  border-radius: 999px;
+  color: white;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+body.transitioning .tab,
+body.transitioning .dock-tab,
+body.transitioning .theme-toggle,
+body.transitioning .ghost-button,
+body.transitioning .action-tile,
+body.transitioning input,
+body.transitioning .clear-search {
+  pointer-events: none;
+}
+
+.tab-transition.active::before {
+  animation: transitionFade 0.95s ease forwards;
+}
+
+.tab-transition.active::after {
+  animation: laneSweep 0.95s ease forwards;
+}
+
+.mobile-dock {
+  display: none;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  min-width: min(92vw, 360px);
+  padding: 14px 18px;
+  border-radius: 18px;
+  color: white;
+  background: rgba(15, 23, 42, 0.92);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.34);
+  transform: translate(-50%, 120px);
+  opacity: 0;
+  transition: transform 0.28s ease, opacity 0.28s ease;
+  text-align: center;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drive {
+  from { transform: translateX(0) rotate(-4deg); }
+  50% { transform: translateX(-14px) rotate(2deg); }
+  to { transform: translateX(18px) rotate(-4deg); }
+}
+
+@keyframes transitionFade {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes laneSweep {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0.15);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1.02);
+  }
+  82% {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scaleX(1.08);
+  }
+}
+
+@keyframes busSweep {
+  0% {
+    opacity: 0;
+    transform: translate(-18vw, -56%) scale(0.92);
+  }
+  14% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+    transform: translate(50vw, -56%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(118vw, -56%) scale(1.02);
+  }
+}
+
+@keyframes labelSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  24% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  82% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 880px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .container {
+    padding: 16px 14px calc(110px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .topbar,
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .top-actions {
+    width: 100%;
+  }
+
+  .theme-toggle,
+  .ghost-button {
+    flex: 1;
+  }
+
+  .tabs {
+    display: none;
+  }
+
+  .mobile-dock {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px;
+    border-radius: 24px;
+  }
+
+  .meta {
+    justify-content: flex-start;
+  }
+
+  .bus {
+    right: 14px;
+    bottom: 96px;
+    font-size: 34px;
+  }
+
+  .transition-label {
+    right: 14px;
+    bottom: 28px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bus" id="bus" aria-hidden="true">🚌</div>
+
+<div class="tab-transition" id="tabTransition" aria-hidden="true">
+  <div class="transition-bus">🚌</div>
+  <div class="transition-label" id="transitionLabel">Kowmar</div>
+</div>
+
+<div class="container">
+  <header class="topbar glass">
+    <div class="brand">
+      <span class="live-pill">LIVE</span>
+      <h1>ROZKLAD</h1>
+      <p class="status-line" id="statusLine">Ładuję status...</p>
+    </div>
+
+    <div class="top-actions">
+      <button class="ghost-button" id="installBtn" type="button">Do ekranu</button>
+      <button class="theme-toggle" id="themeToggle" type="button">Tryb</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-main">
+      <small class="hero-label">Najbliższy kurs</small>
+      <strong class="hero-time" id="heroTime">--:--</strong>
+      <p class="hero-route" id="heroRoute">Szukam kolejnego odjazdu...</p>
+      <div class="hero-meta">
+        <span class="hero-chip" id="heroCountdown">Live</span>
+        <span class="hero-chip" id="heroTabLabel">Kowmar</span>
+      </div>
+    </div>
+
+    <div class="hero-side">
+      <button class="action-tile" id="toggleTodayBtn" type="button">
+        <small>Widok</small>
+        <strong id="toggleTodayLabel">Tylko dziś</strong>
+        <span id="toggleTodayHint">Pokazuję tylko aktywne kursy na bieżący dzień.</span>
+      </button>
+
+      <button class="action-tile" id="shareBtn" type="button">
+        <small>Link</small>
+        <strong>Udostępnij kartę</strong>
+        <span>Wysyła link bezpośrednio do aktualnej zakładki.</span>
+      </button>
+    </div>
+  </section>
+
+  <div class="search-wrap">
+    <label class="search-label" for="search">Wyszukaj konkretną godzinę</label>
+    <div class="search-row">
+      <input id="search" placeholder="Np. 14:45" autocomplete="off">
+      <button class="clear-search hidden" id="clearSearchBtn" type="button">Wyczyść</button>
+    </div>
+  </div>
+
+  <div class="tabs glass" id="desktopTabs">
+    <button class="tab" type="button" data-tab="kowmar">Kowmar</button>
+    <button class="tab" type="button" data-tab="szybki">Szybki</button>
+    <button class="tab" type="button" data-tab="majchrak">Majchrak</button>
+  </div>
+
+  <div id="info"></div>
+  <div id="content"></div>
+</div>
+
+<nav class="mobile-dock" id="mobileDock" aria-label="Nawigacja mobilna">
+  <button class="dock-tab" type="button" data-tab="kowmar">Kowmar</button>
+  <button class="dock-tab" type="button" data-tab="szybki">Szybki</button>
+  <button class="dock-tab" type="button" data-tab="majchrak">Majchrak</button>
+</nav>
+
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<script>
+const tabLabels = {
+  kowmar: "Kowmar",
+  szybki: "Szybki",
+  majchrak: "Majchrak"
+};
+
+const dayLabels = {
+  weekday: "Pn-Pt",
+  saturday: "Sobota",
+  sunday: "Niedziela",
+  all: "Codziennie"
+};
+
+const countdownConfig = {
+  kowmar: [
+    { origin: "Kielce", label: "Odjazd z Kielc", tone: "accent" },
+    { origin: "Ruda", label: "Odjazd z Rudy", tone: "warm" }
+  ],
+  szybki: [
+    { origin: "Kielce", label: "Odjazd z Kielc", tone: "accent" },
+    { origin: "Ruda", label: "Odjazd z Rudy", tone: "warm" }
+  ],
+  majchrak: [
+    { origin: "Wólka", label: "Odjazd z Wólki", tone: "accent" },
+    { origin: "Kielce", label: "Odjazd z Kielc", tone: "warm" }
+  ]
+};
+
+const data = {
+  kowmar: [
+    {
+      title: "Ruda → Kielce",
+      origin: "Ruda",
+      dayType: "weekday",
+      label: "Pn-Pt",
+      times: ["4:45", "5:30", "6:20", "6:40", "6:55", "7:50", "8:45", "10:20", "12:05", "13:00", "13:50", "14:45", "15:30", "16:00", "17:15", "17:55", "20:00"]
+    },
+    {
+      title: "Kielce → Ruda",
+      origin: "Kielce",
+      dayType: "weekday",
+      label: "Pn-Pt",
+      times: ["6:15", "7:05", "7:45", "9:10", "10:25", "12:15", "13:05", "13:55", "14:35", "15:10", "15:50", "16:25", "17:15", "18:30", "19:10", "20:50"]
+    },
+    {
+      title: "Ruda → Kielce",
+      origin: "Ruda",
+      dayType: "saturday",
+      label: "Sobota",
+      times: ["4:45", "6:30", "8:15", "10:15", "12:20", "14:20", "16:00"]
+    },
+    {
+      title: "Kielce → Ruda",
+      origin: "Kielce",
+      dayType: "saturday",
+      label: "Sobota",
+      times: ["5:30", "7:20", "9:15", "11:25", "13:20", "15:10", "17:15"]
+    }
+  ],
+  szybki: [
+    {
+      title: "Ruda → Kielce",
+      origin: "Ruda",
+      dayType: "all",
+      label: "Stały",
+      times: ["6:05", "8:15", "11:00", "13:15", "15:30"]
+    },
+    {
+      title: "Kielce → Ruda",
+      origin: "Kielce",
+      dayType: "all",
+      label: "Stały",
+      times: ["5:30", "6:45", "8:55", "11:45", "14:50"]
+    }
+  ],
+  majchrak: [
+    {
+      title: "Kielce → Wólka",
+      origin: "Kielce",
+      dayType: "weekday",
+      label: "Pn-Pt",
+      times: ["6:00", "7:15", "8:00", "9:20", "10:35", "12:25", "13:45", "15:15", "16:30", "17:45", "18:50"]
+    },
+    {
+      title: "Kielce → Wólka",
+      origin: "Kielce",
+      dayType: "saturday",
+      label: "Sobota",
+      times: ["7:00", "8:50", "11:40", "14:00", "16:10", "18:50"]
+    },
+    {
+      title: "Wólka → Kielce",
+      origin: "Wólka",
+      dayType: "weekday",
+      label: "Pn-Pt",
+      times: ["5:05", "6:15", "6:55", "8:15", "10:15", "12:25", "13:25", "14:45", "16:00", "17:20"]
+    },
+    {
+      title: "Wólka → Kielce",
+      origin: "Wólka",
+      dayType: "saturday",
+      label: "Sobota",
+      times: ["5:50", "7:50", "10:20", "13:10", "15:10", "17:50"]
+    }
+  ]
+};
+
+let manualOverride = localStorage.getItem("themeOverride") === "true";
+let savedTheme = localStorage.getItem("themeMode");
+let showTodayOnly = localStorage.getItem("showTodayOnly") !== "false";
+let isTransitioning = false;
+let transitionTimers = [];
+let toastTimer = null;
+let installPromptEvent = null;
+
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+const searchInput = document.getElementById("search");
+const clearSearchBtn = document.getElementById("clearSearchBtn");
+const statusLine = document.getElementById("statusLine");
+const heroTime = document.getElementById("heroTime");
+const heroRoute = document.getElementById("heroRoute");
+const heroCountdown = document.getElementById("heroCountdown");
+const heroTabLabel = document.getElementById("heroTabLabel");
+const toggleTodayBtn = document.getElementById("toggleTodayBtn");
+const toggleTodayLabel = document.getElementById("toggleTodayLabel");
+const toggleTodayHint = document.getElementById("toggleTodayHint");
+const info = document.getElementById("info");
+const content = document.getElementById("content");
+const toast = document.getElementById("toast");
+const installBtn = document.getElementById("installBtn");
+
+const currentTabFromHash = location.hash.replace("#", "");
+const storedTab = localStorage.getItem("currentTab");
+let currentTab = tabLabels[currentTabFromHash] ? currentTabFromHash : (tabLabels[storedTab] ? storedTab : "kowmar");
+
+function applySystemTheme() {
+  const shouldUseDark = manualOverride ? savedTheme === "dark" : prefersDark.matches;
+  document.body.classList.toggle("dark", shouldUseDark);
+}
+
+function toggleDark() {
+  manualOverride = true;
+  savedTheme = document.body.classList.contains("dark") ? "light" : "dark";
+  localStorage.setItem("themeOverride", "true");
+  localStorage.setItem("themeMode", savedTheme);
+  applySystemTheme();
+}
+
+function showToast(message) {
+  window.clearTimeout(toastTimer);
+  toast.textContent = message;
+  toast.classList.add("show");
+  toastTimer = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
+}
+
+function setCurrentTab(tab) {
+  currentTab = tab;
+  localStorage.setItem("currentTab", tab);
+  history.replaceState(null, "", `${location.pathname}${location.search}#${tab}`);
+  syncActiveTabs();
+  updateStatusLine();
+}
+
+function syncActiveTabs() {
+  document.querySelectorAll("[data-tab]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.tab === currentTab);
+  });
+  heroTabLabel.textContent = tabLabels[currentTab];
+}
+
+function syncTodayToggle() {
+  toggleTodayLabel.textContent = showTodayOnly ? "Tylko dziś" : "Wszystkie warianty";
+  toggleTodayHint.textContent = showTodayOnly
+    ? "Pokazuję tylko aktywne kursy na bieżący dzień."
+    : "Pokazuję też pozostałe warianty rozkładu.";
+}
+
+function animateBus() {
+  const bus = document.getElementById("bus");
+  bus.classList.remove("animate");
+  void bus.offsetWidth;
+  bus.classList.add("animate");
+}
+
+function clearTransitionTimers() {
+  transitionTimers.forEach((timer) => window.clearTimeout(timer));
+  transitionTimers = [];
+}
+
+function playTabTransition(nextTab, nextLabel) {
+  const transition = document.getElementById("tabTransition");
+  const label = document.getElementById("transitionLabel");
+  const transitionBus = transition.querySelector(".transition-bus");
+  const transitionText = transition.querySelector(".transition-label");
+
+  clearTransitionTimers();
+  label.textContent = nextLabel;
+  transition.classList.remove("active");
+  void transition.offsetWidth;
+
+  document.body.classList.add("transitioning");
+  transition.classList.add("active");
+
+  transitionBus.style.animation = "none";
+  transitionText.style.animation = "none";
+  transition.style.animation = "none";
+  transitionBus.offsetHeight;
+
+  transitionBus.style.animation = "busSweep 0.95s cubic-bezier(0.22, 0.8, 0.22, 1) forwards";
+  transition.style.animation = "transitionFade 0.95s ease forwards";
+  transitionText.style.animation = "labelSlide 0.95s ease forwards";
+
+  const switchTimer = window.setTimeout(() => {
+    setCurrentTab(nextTab);
+    animateBus();
+    render();
+  }, 320);
+
+  const finishTimer = window.setTimeout(() => {
+    transition.classList.remove("active");
+    transition.style.animation = "";
+    transitionBus.style.animation = "";
+    transitionText.style.animation = "";
+    document.body.classList.remove("transitioning");
+    isTransitioning = false;
+  }, 980);
+
+  transitionTimers.push(switchTimer, finishTimer);
+}
+
+function handleTabClick(tab) {
+  if (!tabLabels[tab] || tab === currentTab || isTransitioning) {
+    return;
+  }
+
+  isTransitioning = true;
+  playTabTransition(tab, tabLabels[tab]);
+}
+
+function getCurrentDayType(date = new Date()) {
+  const day = date.getDay();
+  if (day === 6) {
+    return "saturday";
+  }
+  if (day === 0) {
+    return "sunday";
+  }
+  return "weekday";
+}
+
+function isSectionActiveToday(section) {
+  return section.dayType === "all" || section.dayType === getCurrentDayType();
+}
+
+function getDepartureCandidate(time) {
+  const now = new Date();
+  const [hours, minutes] = time.split(":").map(Number);
+  const departure = new Date(now);
+  departure.setHours(hours, minutes, 0, 0);
+  if (departure <= now) {
+    return null;
+  }
+  return { time, date: departure };
+}
+
+function getNextTime(times) {
+  let next = null;
+  times.forEach((time) => {
+    const candidate = getDepartureCandidate(time);
+    if (candidate && (!next || candidate.date < next.date)) {
+      next = candidate;
+    }
+  });
+  return next;
+}
+
+function getNextForOrigin(sections, origin) {
+  let next = null;
+  sections
+    .filter((section) => section.origin === origin && isSectionActiveToday(section))
+    .forEach((section) => {
+      const candidate = getNextTime(section.times);
+      if (candidate && (!next || candidate.date < next.date)) {
+        next = { ...candidate, title: section.title, label: section.label };
+      }
+    });
+  return next;
+}
+
+function getOverallNext(sections) {
+  let next = null;
+  sections
+    .filter((section) => isSectionActiveToday(section))
+    .forEach((section) => {
+      const candidate = getNextTime(section.times);
+      if (candidate && (!next || candidate.date < next.date)) {
+        next = {
+          ...candidate,
+          title: section.title,
+          label: section.label
+        };
+      }
+    });
+  return next;
+}
+
+function minutesTo(nextDeparture) {
+  return Math.max(0, Math.ceil((nextDeparture.date - new Date()) / 60000));
+}
+
+function createTag(text, extraClass = "") {
+  const tag = document.createElement("span");
+  tag.className = extraClass ? `tag ${extraClass}` : "tag";
+  tag.textContent = text;
+  return tag;
+}
+
+function createInfoBadge(label, value, subtext, tone) {
+  const badge = document.createElement("div");
+  badge.className = `badge ${tone}`;
+
+  const small = document.createElement("small");
+  small.textContent = label;
+
+  const strong = document.createElement("strong");
+  strong.textContent = value;
+
+  const span = document.createElement("span");
+  span.textContent = subtext;
+
+  badge.appendChild(small);
+  badge.appendChild(strong);
+  badge.appendChild(span);
+
+  return badge;
+}
+
+function updateStatusLine() {
+  const now = new Date();
+  const dayText = now.toLocaleDateString("pl-PL", {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  });
+  const timeText = now.toLocaleTimeString("pl-PL", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  const modeText = showTodayOnly ? "tylko dziś" : "pełny rozkład";
+  statusLine.textContent = `${dayText} • ${timeText} • ${tabLabels[currentTab]} • ${modeText}`;
+}
+
+function updateHero(sections) {
+  const next = getOverallNext(sections);
+
+  if (!next) {
+    heroTime.textContent = "--:--";
+    heroRoute.textContent = "Na dziś nie ma już dalszych kursów w tej zakładce.";
+    heroCountdown.textContent = "Brak kursów";
+    return;
+  }
+
+  heroTime.textContent = next.time;
+  heroRoute.textContent = `${next.title} • ${next.label}`;
+  heroCountdown.textContent = `Za ${minutesTo(next)} min`;
+}
+
+function renderInfo(sections) {
+  info.innerHTML = "";
+
+  const today = getCurrentDayType();
+  const modeLabel = showTodayOnly ? "Aktywny widok" : "Rozszerzony widok";
+  const modeText = showTodayOnly ? "Widzisz tylko kursy obowiązujące dziś." : "Widzisz wszystkie warianty rozkładu.";
+
+  info.appendChild(
+    createInfoBadge("Dziś aktywne", dayLabels[today], "Liczniki opierają się na bieżącym dniu.", today === "sunday" ? "muted" : "accent")
+  );
+
+  countdownConfig[currentTab].forEach((config) => {
+    const next = getNextForOrigin(sections, config.origin);
+    const value = next ? `${next.time} • ${minutesTo(next)} min` : "Brak dalszych kursów";
+    const subtext = next ? `Najbliższy odjazd z ${config.origin}.` : `Na dziś nie ma już odjazdów z ${config.origin}.`;
+    info.appendChild(createInfoBadge(config.label, value, subtext, config.tone));
+  });
+
+  info.appendChild(createInfoBadge(modeLabel, showTodayOnly ? "Tylko dziś" : "Wszystkie", modeText, "muted"));
+}
+
+function renderSearchState() {
+  clearSearchBtn.classList.toggle("hidden", !searchInput.value.trim());
+}
+
+function renderCards(sections) {
+  const query = searchInput.value.trim();
+  const visibleSections = showTodayOnly ? sections.filter((section) => isSectionActiveToday(section)) : sections;
+
+  content.innerHTML = "";
+
+  if (visibleSections.length === 0) {
+    const emptyState = document.createElement("div");
+    emptyState.className = "empty-state glass";
+    emptyState.textContent = "Dla tego dnia nie ma aktywnych kursów w tej zakładce.";
+    content.appendChild(emptyState);
+    return;
+  }
+
+  visibleSections.forEach((section) => {
+    const activeToday = isSectionActiveToday(section);
+    const next = activeToday ? getNextTime(section.times) : null;
+    const filtered = section.times.filter((time) => time.includes(query));
+
+    const card = document.createElement("div");
+    card.className = activeToday ? "card" : "card inactive";
+
+    const header = document.createElement("div");
+    header.className = "card-header";
+
+    const titleWrap = document.createElement("div");
+    const title = document.createElement("h3");
+    title.className = "route";
+    title.textContent = section.title;
+
+    const note = document.createElement("p");
+    note.className = "route-note";
+    note.textContent = activeToday
+      ? "Ten rozkład obowiązuje dzisiaj."
+      : `Ten wariant działa w dni: ${section.label}.`;
+
+    titleWrap.appendChild(title);
+    titleWrap.appendChild(note);
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.appendChild(createTag(`Start: ${section.origin}`));
+    meta.appendChild(createTag(section.label, activeToday ? "active-day" : ""));
+    if (next) {
+      meta.appendChild(createTag(`Najbliższy ${next.time}`, "next"));
+    }
+
+    header.appendChild(titleWrap);
+    header.appendChild(meta);
+    card.appendChild(header);
+
+    if (filtered.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "Brak godzin pasujących do wyszukiwania.";
+      card.appendChild(empty);
+    } else {
+      const timesDiv = document.createElement("div");
+      timesDiv.className = "times";
+
+      filtered.forEach((time) => {
+        const el = document.createElement("div");
+        el.className = next && activeToday && time === next.time ? "time highlight" : "time";
+        el.textContent = time;
+        timesDiv.appendChild(el);
+      });
+
+      card.appendChild(timesDiv);
+    }
+
+    content.appendChild(card);
+  });
+}
+
+function render() {
+  const sections = data[currentTab];
+  updateStatusLine();
+  updateHero(sections);
+  renderInfo(sections);
+  renderSearchState();
+  renderCards(sections);
+}
+
+function toggleTodayView() {
+  showTodayOnly = !showTodayOnly;
+  localStorage.setItem("showTodayOnly", String(showTodayOnly));
+  syncTodayToggle();
+  render();
+  showToast(showTodayOnly ? "Widok ustawiony na dzisiejsze kursy." : "Pokazuję wszystkie warianty rozkładu.");
+}
+
+async function shareCurrentTab() {
+  const shareUrl = `${location.origin}${location.pathname}${location.search}#${currentTab}`;
+  const shareData = {
+    title: `ROZKLAD - ${tabLabels[currentTab]}`,
+    text: `Sprawdź zakładkę ${tabLabels[currentTab]} w ROZKLADZIE.`,
+    url: shareUrl
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+      return;
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(shareUrl);
+      showToast("Link do tej zakładki skopiowany.");
+      return;
+    }
+  } catch (error) {
+    return;
+  }
+
+  showToast("Udostępnianie nie jest dostępne w tej przeglądarce.");
+}
+
+function updateInstallButtonVisibility() {
+  installBtn.textContent = installPromptEvent ? "Zainstaluj" : "Do ekranu";
+}
+
+async function handleInstall() {
+  if (!installPromptEvent) {
+    showToast("Na telefonie użyj opcji Dodaj do ekranu głównego.");
+    return;
+  }
+
+  installPromptEvent.prompt();
+  await installPromptEvent.userChoice;
+  installPromptEvent = null;
+  updateInstallButtonVisibility();
+}
+
+document.getElementById("themeToggle").addEventListener("click", toggleDark);
+document.getElementById("shareBtn").addEventListener("click", shareCurrentTab);
+toggleTodayBtn.addEventListener("click", toggleTodayView);
+installBtn.addEventListener("click", handleInstall);
+searchInput.addEventListener("input", render);
+clearSearchBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  render();
+});
+
+document.querySelectorAll(".tab, .dock-tab").forEach((button) => {
+  button.addEventListener("click", () => handleTabClick(button.dataset.tab));
+});
+
+prefersDark.addEventListener("change", () => {
+  if (!manualOverride) {
+    applySystemTheme();
+  }
+});
+
+window.addEventListener("hashchange", () => {
+  const hashTab = location.hash.replace("#", "");
+  if (tabLabels[hashTab] && hashTab !== currentTab && !isTransitioning) {
+    setCurrentTab(hashTab);
+    render();
+  }
+});
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  installPromptEvent = event;
+  updateInstallButtonVisibility();
+  showToast("Apka jest gotowa do instalacji.");
+});
+
+window.addEventListener("appinstalled", () => {
+  installPromptEvent = null;
+  updateInstallButtonVisibility();
+  showToast("ROZKLAD został zainstalowany.");
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+
+applySystemTheme();
+syncActiveTabs();
+syncTodayToggle();
+updateInstallButtonVisibility();
+render();
+window.setInterval(updateStatusLine, 1000);
+window.setInterval(render, 30000);
+</script>
+
+</body>
+</html>
