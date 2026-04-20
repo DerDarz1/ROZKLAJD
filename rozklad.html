@@ -3,31 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rozkład Busów</title>
+  <title>Rozkład Jazdy</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#09090B" id="theme-color-meta" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Rozkład" />
+  <link rel="apple-touch-icon" href="icon-192.svg" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #09090B;
-      --surface:  #18181B;
-      --raised:   #27272A;
-      --text:     #FAFAFA;
-      --muted:    #A1A1AA;
-      --border:   #27272A;
-      --live:     #34D399;
-      --live-bg:  #064E3B;
-      --past:     #52525B;
+      --bg:      #09090B;
+      --surface: #18181B;
+      --text:    #FAFAFA;
+      --muted:   #A1A1AA;
+      --border:  #27272A;
+      --live:    #34D399;
+      --live-bg: #064E3B;
+      --past:    #52525B;
     }
     body.light {
-      --bg:       #FFFFFF;
-      --surface:  #F4F4F5;
-      --raised:   #E4E4E7;
-      --text:     #09090B;
-      --muted:    #71717A;
-      --border:   #E4E4E7;
-      --live:     #10B981;
-      --live-bg:  #ECFDF5;
-      --past:     #A1A1AA;
+      --bg:      #FFFFFF;
+      --surface: #F4F4F5;
+      --text:    #09090B;
+      --muted:   #71717A;
+      --border:  #E4E4E7;
+      --live:    #10B981;
+      --live-bg: #ECFDF5;
+      --past:    #A1A1AA;
     }
 
     body {
@@ -96,14 +100,9 @@
       text-align: center;
       gap: 3px;
     }
-    .hero-card.no-bus {
-      border-color: var(--border);
-      background: var(--surface);
-    }
-    .hero-card.tomorrow {
-      border-color: var(--border);
-      background: var(--surface);
-    }
+    .hero-card.no-bus  { border-color: var(--border); background: var(--surface); }
+    .hero-card.tomorrow { border-color: var(--border); background: var(--surface); }
+
     .hero-label-row {
       display: flex;
       align-items: center;
@@ -119,70 +118,42 @@
     }
     .hero-card.no-bus .live-dot,
     .hero-card.tomorrow .live-dot { background: var(--muted); animation: none; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
     .hero-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: var(--live);
+      font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--live);
     }
     .hero-card.no-bus .hero-label,
     .hero-card.tomorrow .hero-label { color: var(--muted); }
+
     .hero-time {
-      font-size: 42px;
-      font-weight: 900;
-      letter-spacing: -2px;
-      line-height: 1;
-      font-family: monospace;
+      font-size: 42px; font-weight: 900; letter-spacing: -2px;
+      line-height: 1; font-family: monospace;
     }
     .hero-card.no-bus .hero-time { color: var(--muted); }
-    .hero-countdown {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.3px;
-    }
+
+    .hero-countdown { font-size: 12px; color: var(--muted); letter-spacing: .3px; }
     .hero-when {
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-top: 2px;
+      font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--muted); text-transform: uppercase; margin-top: 2px;
     }
-    .hero-carrier {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .hero-carrier { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--muted); margin-top: 2px; }
 
     /* DATE CHIP */
     .date-chip {
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--muted);
-      font-weight: 700;
-      margin-top: 24px;
-      display: block;
+      font-size: 10px; letter-spacing: 2px; color: var(--muted);
+      font-weight: 700; margin-top: 24px; display: block;
     }
 
     /* SECTION LABEL */
     .section-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: var(--muted);
-      margin-top: 20px;
-      margin-bottom: 10px;
-      display: block;
+      font-size: 10px; font-weight: 700; letter-spacing: 2px;
+      color: var(--muted); margin-top: 20px; margin-bottom: 10px; display: block;
     }
 
     /* SEGMENTED CONTROL */
     .segmented {
+      position: relative;
       display: flex;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -190,78 +161,52 @@
       padding: 4px;
       gap: 2px;
     }
-    .seg-btn {
-      flex: 1;
-      padding: 10px 8px;
+    .seg-pill {
+      position: absolute;
+      top: 4px; bottom: 4px;
       border-radius: 6px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-    .seg-btn .sub {
-      font-size: 9px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .seg-btn.active {
       background: var(--bg);
-      border-color: var(--border);
-      color: var(--text);
+      border: 1px solid var(--border);
+      transition: left .22s cubic-bezier(.4,0,.2,1), width .22s cubic-bezier(.4,0,.2,1);
+      pointer-events: none;
+      z-index: 0;
     }
-    .seg-btn.dir-btn {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 12px 8px;
-      flex-direction: row;
-      gap: 0;
-      letter-spacing: 0.5px;
+    .seg-btn {
+      position: relative; z-index: 1;
+      flex: 1; padding: 10px 8px;
+      border-radius: 6px; border: 1px solid transparent;
+      background: transparent; color: var(--muted);
+      font-size: 12px; font-weight: 800; letter-spacing: 1px;
+      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      transition: color .15s;
     }
+    .seg-btn .sub { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+    .seg-btn.active { background: transparent !important; border-color: transparent !important; color: var(--text); }
+    .seg-btn.dir-btn { font-size: 12px; font-weight: 700; padding: 12px 8px; flex-direction: row; gap: 0; letter-spacing: .5px; }
 
     /* LIST HEADER */
     .list-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 4px;
-      margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 4px; margin-bottom: 10px;
     }
     .count-badge {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--muted);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 3px 8px;
-      letter-spacing: 1px;
+      font-size: 10px; font-weight: 700; color: var(--muted);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 4px; padding: 3px 8px; letter-spacing: 1px;
     }
 
     /* BUS TRANSITION */
     #bus-transition {
-      position: fixed;
-      top: 50%;
-      left: -160px;
+      position: fixed; top: 50%; left: -160px;
       transform: translateY(-50%);
-      font-size: 80px;
-      line-height: 1;
-      z-index: 9999;
-      pointer-events: none;
+      font-size: 80px; line-height: 1;
+      z-index: 9999; pointer-events: none;
       white-space: nowrap;
       filter: drop-shadow(0 4px 24px #000a);
-      transition: none;
     }
     #bus-transition.driving {
-      animation: bus-drive 0.72s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      animation: bus-drive .72s cubic-bezier(.4,0,.2,1) forwards;
     }
     @keyframes bus-drive {
       0%   { left: -160px; }
@@ -271,120 +216,37 @@
     }
 
     /* SCHEDULE TRANSITION */
-    #schedule-container {
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-    #schedule-container.fade-out {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-    #schedule-container.fade-in {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Sliding pill inside segmented control */
-    .segmented {
-      position: relative;
-    }
-    .seg-pill {
-      position: absolute;
-      top: 4px;
-      bottom: 4px;
-      border-radius: 6px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      transition: left 0.22s cubic-bezier(0.4,0,0.2,1), width 0.22s cubic-bezier(0.4,0,0.2,1);
-      pointer-events: none;
-      z-index: 0;
-    }
-    .seg-btn {
-      position: relative;
-      z-index: 1;
-    }
-    /* Remove the per-button active background since pill handles it */
-    .seg-btn.active {
-      background: transparent !important;
-      border-color: transparent !important;
-    }
+    #schedule-container { transition: opacity .2s ease, transform .2s ease; }
+    #schedule-container.fade-out { opacity: 0; transform: translateY(6px); }
 
     /* TIME GRID */
-    .time-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
+    .time-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
     .time-cell {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 14px 8px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
-    .time-cell.past {
-      opacity: 0.3;
-      background: var(--bg);
-    }
-    .time-cell.next {
-      background: var(--live);
-      border-color: var(--live);
-    }
-    .time-text {
-      font-size: 18px;
-      font-weight: 700;
-      font-family: monospace;
-      letter-spacing: -0.5px;
-    }
-    .time-cell.past .time-text {
-      color: var(--past);
-      text-decoration: line-through;
-    }
-    .time-cell.next .time-text {
-      color: #052E16;
-    }
-    .next-badge {
-      font-size: 9px;
-      font-weight: 800;
-      color: #052E16;
-      letter-spacing: 0.8px;
-      margin-top: 3px;
-    }
+    .time-cell.past  { opacity: .3; background: var(--bg); }
+    .time-cell.next  { background: var(--live); border-color: var(--live); }
+    .time-text { font-size: 18px; font-weight: 700; font-family: monospace; letter-spacing: -.5px; }
+    .time-cell.past .time-text { color: var(--past); text-decoration: line-through; }
+    .time-cell.next .time-text { color: #052E16; }
+    .next-badge { font-size: 9px; font-weight: 800; color: #052E16; letter-spacing: .8px; margin-top: 3px; }
 
     /* EMPTY STATE */
     .empty-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 32px;
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-      background: var(--surface);
-      text-align: center;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px; border: 1px dashed var(--border);
+      border-radius: 8px; background: var(--surface); text-align: center;
     }
     .empty-icon { font-size: 32px; color: var(--muted); }
     .empty-title { font-size: 18px; font-weight: 800; margin-top: 12px; }
     .empty-text { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
     /* FOOTER */
-    footer {
-      margin-top: 32px;
-      text-align: center;
-    }
-    .footer-text {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 2px;
-      font-weight: 700;
-    }
-    .footer-small {
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 4px;
-      opacity: 0.7;
-    }
+    footer { margin-top: 32px; text-align: center; }
+    .footer-text { font-size: 10px; color: var(--muted); letter-spacing: 2px; font-weight: 700; }
+    .footer-small { font-size: 10px; color: var(--muted); margin-top: 4px; opacity: .7; }
   </style>
 </head>
 <body>
@@ -400,23 +262,17 @@
 </header>
 
 <main>
-  <!-- HERO — dwa kafelki: do Kielc / z Kielc -->
+  <!-- HERO -->
   <div class="hero-grid">
     <div class="hero-card" id="hero-to-kielce">
-      <div class="hero-label-row">
-        <div class="live-dot"></div>
-        <span class="hero-label">DO KIELC</span>
-      </div>
+      <div class="hero-label-row"><div class="live-dot"></div><span class="hero-label">DO KIELC</span></div>
       <div class="hero-time" id="hk-time">—</div>
       <div class="hero-countdown" id="hk-countdown"></div>
       <div class="hero-when" id="hk-when"></div>
       <div class="hero-carrier" id="hk-carrier"></div>
     </div>
     <div class="hero-card" id="hero-from-kielce">
-      <div class="hero-label-row">
-        <div class="live-dot"></div>
-        <span class="hero-label">Z KIELC</span>
-      </div>
+      <div class="hero-label-row"><div class="live-dot"></div><span class="hero-label">Z KIELC</span></div>
       <div class="hero-time" id="hfk-time">—</div>
       <div class="hero-countdown" id="hfk-countdown"></div>
       <div class="hero-when" id="hfk-when"></div>
@@ -424,29 +280,23 @@
     </div>
   </div>
 
-  <!-- DATE -->
   <span class="date-chip" id="date-chip"></span>
 
-  <!-- DAY TYPE -->
   <span class="section-label">DZIEŃ</span>
   <div class="segmented" id="day-seg"></div>
 
-  <!-- CARRIER -->
   <span class="section-label">PRZEWOŹNIK</span>
   <div class="segmented" id="carrier-seg"></div>
 
-  <!-- DIRECTION -->
   <span class="section-label">KIERUNEK</span>
   <div class="segmented" id="direction-seg"></div>
 
-  <!-- SCHEDULE -->
   <div class="list-header">
     <span class="section-label" id="schedule-label" style="margin:0"></span>
     <span class="count-badge" id="count-badge">0</span>
   </div>
   <div id="schedule-container"></div>
 
-  <!-- FOOTER -->
   <footer>
     <div class="footer-text">Dane rozkładowe · KOWMAR · MAJCHRAK</div>
     <div class="footer-small">Kursy orientacyjne — potwierdź u przewoźnika</div>
@@ -484,379 +334,219 @@ const CARRIERS = [
   }
 ];
 
-function timeToMin(t) {
-  const [h, m] = t.split(":").map(Number);
-  return h * 60 + m;
-}
+function timeToMin(t) { const [h,m]=t.split(":").map(Number); return h*60+m; }
 
 function formatCountdown(sec) {
-  if (sec <= 0) return "teraz";
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  if (h > 0) return `${h}g ${m}min`;
-  if (m > 0) return `${m}min ${s}s`;
+  if (sec<=0) return "teraz";
+  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
+  if (h>0) return `${h}g ${m}min`;
+  if (m>0) return `${m}min ${s}s`;
   return `${s}s`;
 }
 
 function getDayType(d) {
-  const day = d.getDay();
-  if (day === 0) return "sunday";
-  if (day === 6) return "saturday";
+  const day=d.getDay();
+  if (day===0) return "sunday";
+  if (day===6) return "saturday";
   return "weekday";
 }
 
 function getDayLabel(dt) {
-  if (dt === "weekday") return "Poniedziałek–Piątek";
-  if (dt === "saturday") return "Sobota";
+  if (dt==="weekday") return "Poniedziałek–Piątek";
+  if (dt==="saturday") return "Sobota";
   return "Niedziela";
 }
 
-function findGlobalNext(now) {
-  const dt = getDayType(now);
-  if (dt === "sunday") return null;
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-  const nowSec = now.getSeconds();
-  let best = null;
-  for (const carrier of CARRIERS) {
-    for (const dir of carrier.directions) {
-      const times = dt === "saturday" ? dir.times.saturday : dir.times.weekday;
-      for (const t of times) {
-        const tMin = timeToMin(t);
-        if (tMin >= nowMin) {
-          const diffMin = tMin - nowMin;
-          if (!best || diffMin < best.minutesUntil) {
-            best = { carrier, direction: dir, time: t, minutesUntil: diffMin, secondsUntil: diffMin * 60 - nowSec };
-          }
-        }
-      }
-    }
-  }
-  return best;
-}
-
 function findNextInDir(dir, now) {
-  const dt = getDayType(now);
-  if (dt === "sunday") return null;
-  const times = dt === "saturday" ? dir.times.saturday : dir.times.weekday;
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-  const nowSec = now.getSeconds();
-  for (let i = 0; i < times.length; i++) {
-    const tMin = timeToMin(times[i]);
-    if (tMin >= nowMin) {
-      return { time: times[i], secondsUntil: (tMin - nowMin) * 60 - nowSec, index: i };
-    }
+  const dt=getDayType(now);
+  if (dt==="sunday") return null;
+  const times=dt==="saturday"?dir.times.saturday:dir.times.weekday;
+  const nowMin=now.getHours()*60+now.getMinutes(), nowSec=now.getSeconds();
+  for (let i=0;i<times.length;i++) {
+    const tMin=timeToMin(times[i]);
+    if (tMin>=nowMin) return {time:times[i], secondsUntil:(tMin-nowMin)*60-nowSec, index:i};
   }
   return null;
 }
 
-// Find next bus matching a filter fn (dir => bool), with tomorrow fallback
 function findNextByFilter(filterFn, now) {
-  const dt = getDayType(now);
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-  const nowSec = now.getSeconds();
-
-  // Try today first (skip sunday)
-  if (dt !== "sunday") {
-    let best = null;
-    for (const carrier of CARRIERS) {
-      for (const dir of carrier.directions) {
-        if (!filterFn(dir)) continue;
-        const times = dt === "saturday" ? dir.times.saturday : dir.times.weekday;
-        for (const t of times) {
-          const tMin = timeToMin(t);
-          if (tMin >= nowMin) {
-            const diffMin = tMin - nowMin;
-            if (!best || diffMin < best.minutesUntil) {
-              best = { carrier, dir, time: t, minutesUntil: diffMin,
-                secondsUntil: diffMin * 60 - nowSec, tomorrow: false };
-            }
-          }
+  const dt=getDayType(now);
+  const nowMin=now.getHours()*60+now.getMinutes(), nowSec=now.getSeconds();
+  if (dt!=="sunday") {
+    let best=null;
+    for (const carrier of CARRIERS) for (const dir of carrier.directions) {
+      if (!filterFn(dir)) continue;
+      const times=dt==="saturday"?dir.times.saturday:dir.times.weekday;
+      for (const t of times) {
+        const tMin=timeToMin(t);
+        if (tMin>=nowMin) {
+          const diffMin=tMin-nowMin;
+          if (!best||diffMin<best.minutesUntil)
+            best={carrier,dir,time:t,minutesUntil:diffMin,secondsUntil:diffMin*60-nowSec,tomorrow:false};
         }
       }
     }
     if (best) return best;
   }
-
-  // Fallback: tomorrow
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  const dtTomorrow = getDayType(tomorrow);
-  if (dtTomorrow === "sunday") return null;
-
-  let best = null;
-  for (const carrier of CARRIERS) {
-    for (const dir of carrier.directions) {
-      if (!filterFn(dir)) continue;
-      const times = dtTomorrow === "saturday" ? dir.times.saturday : dir.times.weekday;
-      if (!times.length) continue;
-      const t = times[0]; // first bus tomorrow
-      const tMin = timeToMin(t);
-      // seconds until = remaining today + minutes into tomorrow
-      const secondsLeftToday = (24 * 60 - nowMin) * 60 - nowSec;
-      const secondsUntil = secondsLeftToday + tMin * 60;
-      if (!best || secondsUntil < best.secondsUntil) {
-        best = { carrier, dir, time: t, minutesUntil: Math.floor(secondsUntil / 60),
-          secondsUntil, tomorrow: true };
-      }
-    }
+  // tomorrow fallback
+  const tom=new Date(now); tom.setDate(tom.getDate()+1); tom.setHours(0,0,0,0);
+  const dtTom=getDayType(tom);
+  if (dtTom==="sunday") return null;
+  let best=null;
+  for (const carrier of CARRIERS) for (const dir of carrier.directions) {
+    if (!filterFn(dir)) continue;
+    const times=dtTom==="saturday"?dir.times.saturday:dir.times.weekday;
+    if (!times.length) continue;
+    const t=times[0], tMin=timeToMin(t);
+    const secLeft=(24*60-nowMin)*60-nowSec;
+    const secondsUntil=secLeft+tMin*60;
+    if (!best||secondsUntil<best.secondsUntil)
+      best={carrier,dir,time:t,minutesUntil:Math.floor(secondsUntil/60),secondsUntil,tomorrow:true};
   }
   return best;
 }
 
-function updateHeroCard(cardId, timeId, countdownId, whenId, carrierId, result) {
-  const card = document.getElementById(cardId);
-  card.classList.remove("no-bus", "tomorrow");
+function updateHeroCard(cardId,timeId,countdownId,whenId,cId,result) {
+  const card=document.getElementById(cardId);
+  card.classList.remove("no-bus","tomorrow");
   if (result) {
     if (result.tomorrow) card.classList.add("tomorrow");
-    document.getElementById(timeId).textContent = result.time;
-    document.getElementById(countdownId).textContent = `za ${formatCountdown(result.secondsUntil)}`;
-    document.getElementById(whenId).textContent = result.tomorrow ? "jutro" : "dziś";
-    document.getElementById(carrierId).textContent =
-      result.carrier.name + (result.carrier.subtitle ? ` · ${result.carrier.subtitle}` : "");
+    document.getElementById(timeId).textContent=result.time;
+    document.getElementById(countdownId).textContent=`za ${formatCountdown(result.secondsUntil)}`;
+    document.getElementById(whenId).textContent=result.tomorrow?"jutro":"dziś";
+    document.getElementById(cId).textContent=result.carrier.name+(result.carrier.subtitle?` · ${result.carrier.subtitle}`:"");
   } else {
     card.classList.add("no-bus");
-    document.getElementById(timeId).textContent = "—";
-    document.getElementById(countdownId).textContent = "brak kursów";
-    document.getElementById(whenId).textContent = "";
-    document.getElementById(carrierId).textContent = "";
+    document.getElementById(timeId).textContent="—";
+    document.getElementById(countdownId).textContent="brak kursów";
+    document.getElementById(whenId).textContent="";
+    document.getElementById(cId).textContent="";
   }
 }
 
-// --- State ---
-let carrierId = CARRIERS[0].id;
-let directionId = CARRIERS[0].directions[0].id;
-let isDark = true;
-let dayOverride = null; // null = auto (today), "weekday" or "saturday" = manual
+// State
+let carrierId=CARRIERS[0].id, directionId=CARRIERS[0].directions[0].id;
+let isDark=true, dayOverride=null;
 
-function getCarrier() { return CARRIERS.find(c => c.id === carrierId); }
-function getDirection() {
-  const c = getCarrier();
-  return c.directions.find(d => d.id === directionId) ?? c.directions[0];
-}
-function getEffectiveDayType() {
-  return dayOverride !== null ? dayOverride : getDayType(new Date());
-}
+function getCarrier() { return CARRIERS.find(c=>c.id===carrierId); }
+function getDirection() { const c=getCarrier(); return c.directions.find(d=>d.id===directionId)??c.directions[0]; }
+function getEffectiveDayType() { return dayOverride!==null?dayOverride:getDayType(new Date()); }
 
-// --- Sliding pill helper ---
 function updatePill(segEl) {
-  let pill = segEl.querySelector(".seg-pill");
-  if (!pill) {
-    pill = document.createElement("div");
-    pill.className = "seg-pill";
-    segEl.insertBefore(pill, segEl.firstChild);
-  }
-  const activeBtn = segEl.querySelector(".seg-btn.active");
-  if (!activeBtn) { pill.style.display = "none"; return; }
-  pill.style.display = "";
-  // Position relative to the segmented container (which has padding:4px)
-  pill.style.left = activeBtn.offsetLeft + "px";
-  pill.style.width = activeBtn.offsetWidth + "px";
+  let pill=segEl.querySelector(".seg-pill");
+  if (!pill) { pill=document.createElement("div"); pill.className="seg-pill"; segEl.insertBefore(pill,segEl.firstChild); }
+  const active=segEl.querySelector(".seg-btn.active");
+  if (!active){pill.style.display="none";return;}
+  pill.style.display="";
+  pill.style.left=active.offsetLeft+"px";
+  pill.style.width=active.offsetWidth+"px";
 }
 
-// --- Render day tabs ---
 function renderDayTabs() {
-  const seg = document.getElementById("day-seg");
-  seg.innerHTML = "";
-  const realDay = getDayType(new Date());
-  const days = [
-    { id: "weekday", label: "Pon–Pt" },
-    { id: "saturday", label: "Sobota" },
-  ];
-  for (const d of days) {
-    const btn = document.createElement("button");
-    const isActive = getEffectiveDayType() === d.id;
-    const isToday = realDay === d.id && dayOverride === null;
-    btn.className = "seg-btn" + (isActive ? " active" : "");
-    btn.innerHTML = `<span>${d.label}</span>${isToday ? `<span class="sub">dziś</span>` : ""}`;
-    btn.onclick = () => {
-      dayOverride = d.id;
-      renderDayTabs();
-      renderScheduleAnimated();
-    };
+  const seg=document.getElementById("day-seg"); seg.innerHTML="";
+  const realDay=getDayType(new Date());
+  [{id:"weekday",label:"Pon–Pt"},{id:"saturday",label:"Sobota"}].forEach(d=>{
+    const btn=document.createElement("button");
+    const isActive=getEffectiveDayType()===d.id;
+    const isToday=realDay===d.id&&dayOverride===null;
+    btn.className="seg-btn"+(isActive?" active":"");
+    btn.innerHTML=`<span>${d.label}</span>${isToday?`<span class="sub">dziś</span>`:""}`;
+    btn.onclick=()=>{dayOverride=d.id;renderDayTabs();renderScheduleAnimated();};
     seg.appendChild(btn);
-  }
-  requestAnimationFrame(() => updatePill(seg));
-}
-
-// --- Render carrier tabs ---
-function renderCarrierTabs() {
-  const seg = document.getElementById("carrier-seg");
-  seg.innerHTML = "";
-  for (const c of CARRIERS) {
-    const btn = document.createElement("button");
-    btn.className = "seg-btn" + (c.id === carrierId ? " active" : "");
-    btn.innerHTML = `<span>${c.name}</span>${c.subtitle ? `<span class="sub">${c.subtitle}</span>` : ""}`;
-    btn.onclick = () => {
-      carrierId = c.id;
-      const newCarrier = getCarrier();
-      if (!newCarrier.directions.find(d => d.id === directionId)) {
-        directionId = newCarrier.directions[0].id;
-      }
-      renderCarrierTabs();
-      renderDirectionTabs();
-      renderScheduleAnimated();
-    };
-    seg.appendChild(btn);
-  }
-  requestAnimationFrame(() => updatePill(seg));
-}
-
-// --- Render direction tabs ---
-function renderDirectionTabs() {
-  const seg = document.getElementById("direction-seg");
-  seg.innerHTML = "";
-  const c = getCarrier();
-  for (const d of c.directions) {
-    const btn = document.createElement("button");
-    btn.className = "seg-btn dir-btn" + (d.id === directionId ? " active" : "");
-    btn.textContent = `${d.from}  →  ${d.to}`;
-    btn.onclick = () => {
-      directionId = d.id;
-      renderDirectionTabs();
-      renderScheduleAnimated();
-    };
-    seg.appendChild(btn);
-  }
-  requestAnimationFrame(() => updatePill(seg));
-}
-
-// --- Bus transition ---
-function triggerBus(onMidpoint) {
-  const bus = document.getElementById("bus-transition");
-  bus.classList.remove("driving");
-  void bus.offsetWidth; // reflow to restart animation
-  bus.classList.add("driving");
-  // swap content at the midpoint (when bus is centre-screen)
-  setTimeout(onMidpoint, 340);
-  bus.addEventListener("animationend", () => bus.classList.remove("driving"), { once: true });
-}
-
-// --- Animated schedule swap ---
-function renderScheduleAnimated() {
-  const container = document.getElementById("schedule-container");
-  triggerBus(() => {
-    container.classList.add("fade-out");
-    renderSchedule();
-    requestAnimationFrame(() => {
-      container.classList.remove("fade-out");
-    });
   });
+  requestAnimationFrame(()=>updatePill(seg));
 }
 
-// --- Render schedule grid ---
+function renderCarrierTabs() {
+  const seg=document.getElementById("carrier-seg"); seg.innerHTML="";
+  CARRIERS.forEach(c=>{
+    const btn=document.createElement("button");
+    btn.className="seg-btn"+(c.id===carrierId?" active":"");
+    btn.innerHTML=`<span>${c.name}</span>${c.subtitle?`<span class="sub">${c.subtitle}</span>`:""}`;
+    btn.onclick=()=>{
+      carrierId=c.id;
+      if (!getCarrier().directions.find(d=>d.id===directionId)) directionId=getCarrier().directions[0].id;
+      renderCarrierTabs(); renderDirectionTabs(); renderScheduleAnimated();
+    };
+    seg.appendChild(btn);
+  });
+  requestAnimationFrame(()=>updatePill(seg));
+}
+
+function renderDirectionTabs() {
+  const seg=document.getElementById("direction-seg"); seg.innerHTML="";
+  getCarrier().directions.forEach(d=>{
+    const btn=document.createElement("button");
+    btn.className="seg-btn dir-btn"+(d.id===directionId?" active":"");
+    btn.textContent=`${d.from}  →  ${d.to}`;
+    btn.onclick=()=>{directionId=d.id;renderDirectionTabs();renderScheduleAnimated();};
+    seg.appendChild(btn);
+  });
+  requestAnimationFrame(()=>updatePill(seg));
+}
+
+function triggerBus(onMidpoint) {
+  const bus=document.getElementById("bus-transition");
+  bus.classList.remove("driving"); void bus.offsetWidth; bus.classList.add("driving");
+  setTimeout(onMidpoint,340);
+  bus.addEventListener("animationend",()=>bus.classList.remove("driving"),{once:true});
+}
+
+function renderScheduleAnimated() {
+  const c=document.getElementById("schedule-container");
+  triggerBus(()=>{ c.classList.add("fade-out"); renderSchedule(); requestAnimationFrame(()=>c.classList.remove("fade-out")); });
+}
+
 function renderSchedule() {
-  const now = new Date();
-  const dt = getEffectiveDayType();
-  const isLive = dayOverride === null;
-  const dayLabel = getDayLabel(dt);
-  const dir = getDirection();
-  const carrier = getCarrier();
-
-  document.getElementById("schedule-label").textContent =
-    `ROZKŁAD · ${dayLabel.toUpperCase()}`;
-
-  const times = dt === "sunday" ? [] : (dt === "saturday" ? dir.times.saturday : dir.times.weekday);
-  document.getElementById("count-badge").textContent = times.length;
-
-  const container = document.getElementById("schedule-container");
-  container.innerHTML = "";
-
-  if (dt === "sunday") {
-    container.innerHTML = `<div class="empty-card"><div class="empty-icon">○</div><div class="empty-title">Niedziela</div><div class="empty-text">W niedzielę busy nie kursują</div></div>`;
-    return;
-  }
-  if (times.length === 0) {
-    const name = carrier.name + (carrier.subtitle ? ` ${carrier.subtitle}` : "");
-    const when = dt === "saturday" ? "soboty" : "dni powszednie";
-    container.innerHTML = `<div class="empty-card"><div class="empty-icon">—</div><div class="empty-title">Brak kursów</div><div class="empty-text">${name} nie kursuje w ${when}</div></div>`;
-    return;
-  }
-
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-  // Only show past/next highlighting when viewing today's real schedule
-  const nextInDir = isLive ? findNextInDir(dir, now) : null;
-  const grid = document.createElement("div");
-  grid.className = "time-grid";
-
-  times.forEach((t, idx) => {
-    const tMin = timeToMin(t);
-    const isPast = isLive && tMin < nowMin;
-    const isNext = isLive && nextInDir && nextInDir.index === idx && nextInDir.time === t;
-
-    const cell = document.createElement("div");
-    cell.className = "time-cell" + (isPast ? " past" : "") + (isNext ? " next" : "");
-
-    const timeEl = document.createElement("div");
-    timeEl.className = "time-text";
-    timeEl.textContent = t;
-    cell.appendChild(timeEl);
-
-    if (isNext) {
-      const badge = document.createElement("div");
-      badge.className = "next-badge";
-      badge.id = "next-badge-live";
-      badge.textContent = `ZA ${formatCountdown(nextInDir.secondsUntil)}`;
-      cell.appendChild(badge);
-    }
+  const now=new Date(), dt=getEffectiveDayType(), isLive=dayOverride===null;
+  const dir=getDirection(), carrier=getCarrier();
+  document.getElementById("schedule-label").textContent=`ROZKŁAD · ${getDayLabel(dt).toUpperCase()}`;
+  const times=dt==="sunday"?[]:(dt==="saturday"?dir.times.saturday:dir.times.weekday);
+  document.getElementById("count-badge").textContent=times.length;
+  const container=document.getElementById("schedule-container"); container.innerHTML="";
+  if (dt==="sunday") { container.innerHTML=`<div class="empty-card"><div class="empty-icon">○</div><div class="empty-title">Niedziela</div><div class="empty-text">W niedzielę busy nie kursują</div></div>`; return; }
+  if (!times.length) { const n=carrier.name+(carrier.subtitle?` ${carrier.subtitle}`:""); container.innerHTML=`<div class="empty-card"><div class="empty-icon">—</div><div class="empty-title">Brak kursów</div><div class="empty-text">${n} nie kursuje w ${dt==="saturday"?"soboty":"dni powszednie"}</div></div>`; return; }
+  const nowMin=now.getHours()*60+now.getMinutes();
+  const nextInDir=isLive?findNextInDir(dir,now):null;
+  const grid=document.createElement("div"); grid.className="time-grid";
+  times.forEach((t,idx)=>{
+    const tMin=timeToMin(t), isPast=isLive&&tMin<nowMin;
+    const isNext=isLive&&nextInDir&&nextInDir.index===idx&&nextInDir.time===t;
+    const cell=document.createElement("div");
+    cell.className="time-cell"+(isPast?" past":"")+(isNext?" next":"");
+    const te=document.createElement("div"); te.className="time-text"; te.textContent=t; cell.appendChild(te);
+    if (isNext) { const b=document.createElement("div"); b.className="next-badge"; b.id="next-badge-live"; b.textContent=`ZA ${formatCountdown(nextInDir.secondsUntil)}`; cell.appendChild(b); }
     grid.appendChild(cell);
   });
-
   container.appendChild(grid);
 }
 
-// --- Update hero + clock every second ---
 function tick() {
-  const now = new Date();
-  const dt = getDayType(now);
-  const dayLabel = getDayLabel(dt);
-
-  const timeStr = now.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
-  document.getElementById("header-sub").textContent = `${dayLabel} · ${timeStr}`;
-
-  const dateStr = now.toLocaleDateString("pl-PL", { weekday: "long", day: "numeric", month: "long" });
-  document.getElementById("date-chip").textContent = dateStr.toUpperCase();
-
-  // Hero: do Kielc — kierunki gdzie .to === "Kielce"
-  updateHeroCard(
-    "hero-to-kielce", "hk-time", "hk-countdown", "hk-when", "hk-carrier",
-    findNextByFilter(d => d.to === "Kielce", now)
-  );
-  // Hero: z Kielc — kierunki gdzie .from === "Kielce"
-  updateHeroCard(
-    "hero-from-kielce", "hfk-time", "hfk-countdown", "hfk-when", "hfk-carrier",
-    findNextByFilter(d => d.from === "Kielce", now)
-  );
-
-  // Update next-badge countdown live
-  const dir = getDirection();
-  const nextInDir = findNextInDir(dir, now);
-  const badge = document.getElementById("next-badge-live");
-  if (badge && nextInDir) {
-    badge.textContent = `ZA ${formatCountdown(nextInDir.secondsUntil)}`;
-  }
-
-  // Re-render grid every minute
-  if (now.getSeconds() === 0) renderSchedule();
+  const now=new Date(), dt=getDayType(now);
+  document.getElementById("header-sub").textContent=`${getDayLabel(dt)} · ${now.toLocaleTimeString("pl-PL",{hour:"2-digit",minute:"2-digit"})}`;
+  document.getElementById("date-chip").textContent=now.toLocaleDateString("pl-PL",{weekday:"long",day:"numeric",month:"long"}).toUpperCase();
+  updateHeroCard("hero-to-kielce","hk-time","hk-countdown","hk-when","hk-carrier",findNextByFilter(d=>d.to==="Kielce",now));
+  updateHeroCard("hero-from-kielce","hfk-time","hfk-countdown","hfk-when","hfk-carrier",findNextByFilter(d=>d.from==="Kielce",now));
+  const nextInDir=findNextInDir(getDirection(),now);
+  const badge=document.getElementById("next-badge-live");
+  if (badge&&nextInDir) badge.textContent=`ZA ${formatCountdown(nextInDir.secondsUntil)}`;
+  if (now.getSeconds()===0) renderSchedule();
 }
 
-// --- Theme toggle ---
-document.getElementById("theme-btn").onclick = () => {
-  isDark = !isDark;
-  document.body.classList.toggle("light", !isDark);
-  document.getElementById("theme-btn").textContent = isDark ? "☀" : "☾";
+document.getElementById("theme-btn").onclick=()=>{
+  isDark=!isDark;
+  document.body.classList.toggle("light",!isDark);
+  document.getElementById("theme-btn").textContent=isDark?"☀":"☾";
+  document.getElementById("theme-color-meta").content=isDark?"#09090B":"#FFFFFF";
 };
 
-// --- Init ---
-// Pre-select today's day tab
-dayOverride = getDayType(new Date()) === "sunday" ? "weekday" : getDayType(new Date());
-renderDayTabs();
-renderCarrierTabs();
-renderDirectionTabs();
-renderSchedule();
-tick();
-setInterval(tick, 1000);
+// PWA service worker
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+
+// Init
+dayOverride=getDayType(new Date())==="sunday"?"weekday":getDayType(new Date());
+renderDayTabs(); renderCarrierTabs(); renderDirectionTabs(); renderSchedule(); tick();
+setInterval(tick,1000);
 </script>
 </body>
 </html>
