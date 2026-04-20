@@ -1,37 +1,26 @@
-const CACHE_NAME = "rozklad-app-v4";
-const APP_FILES = [
-  "./",
-  "./index.html",
+const CACHE = "rozklad-v1";
+const ASSETS = [
   "./rozklad.html",
   "./manifest.json",
-  "./icon.png",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./sw.js"
+  "./icon-192.svg",
+  "./icon-512.svg"
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES))
-  );
+self.addEventListener("install", e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-        .map((key) => caches.delete(key))
-      )
-    )
-  );
+self.addEventListener("activate", e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ));
   self.clients.claim();
 });
 
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => response || fetch(event.request))
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
+
